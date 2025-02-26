@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>个人信息 - Stalleco</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <h1>个人信息</h1>
+  </header>
+  <nav>
+    <a href="home.html">主页</a>
+    <a href="stall.html">摆摊模式</a>
+    <a href="community.html">社区模式</a>
+    <a href="#" id="logoutLink">退出登录</a>
+  </nav>
+  <main>
+    <section>
+      <h2>编辑摊位信息</h2>
+      <form id="profileForm">
+        <label>
+          摊位名称:
+          <input type="text" id="stallName">
+        </label>
+        <label>
+          摊位描述:
+          <textarea id="stallDescription"></textarea>
+        </label>
+        <button type="submit">保存</button>
+      </form>
+      <div id="profileMessage"></div>
+    </section>
+  </main>
+  <script src="js/app.js"></script>
+  <script>
+    window.onload = function() {
+      checkLogin();
+      // 如果用户已有摊位信息，则预填
+      const user = getCurrentUser();
+      if(user.stallName) {
+        document.getElementById('stallName').value = user.stallName;
+      }
+      if(user.description) {
+        document.getElementById('stallDescription').value = user.description;
+      }
+      document.getElementById('logoutLink').addEventListener('click', function(e) {
+         e.preventDefault();
+         logoutUser();
+      });
+      
+      document.getElementById('profileForm').addEventListener('submit', function(e) {
+         e.preventDefault();
+         const updatedVendor = {
+            stallName: document.getElementById('stallName').value,
+            description: document.getElementById('stallDescription').value
+         };
+         updateProfile(user.id, updatedVendor);
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>社区模式 - Stalleco</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <h1>社区模式</h1>
+  </header>
+  <nav>
+    <a href="home.html">主页</a>
+    <a href="profile.html">个人信息</a>
+    <a href="stall.html">摆摊模式</a>
+    <a href="#" id="logoutLink">退出登录</a>
+  </nav>
+  <main>
+    <section>
+      <h2>发帖</h2>
+      <form id="postForm">
+        <label>
+          帖子内容:
+          <textarea id="postContent" required></textarea>
+        </label>
+        <label>
+          图片 URL（可选，多个以逗号分隔）:
+          <input type="text" id="postImageUrls">
+        </label>
+        <button type="submit">发布帖子</button>
+      </form>
+      <div id="postMessage"></div>
+    </section>
+    <section>
+      <h2>帖子列表</h2>
+      <button id="refreshPosts">刷新帖子</button>
+      <div id="postsList"></div>
+    </section>
+  </main>
+  <script src="js/app.js"></script>
+  <script>
+    window.onload = function() {
+      checkLogin();
+      document.getElementById('logoutLink').addEventListener('click', function(e) {
+         e.preventDefault();
+         logoutUser();
+      });
+      document.getElementById('postForm').addEventListener('submit', function(e) {
+         e.preventDefault();
+         const content = document.getElementById('postContent').value;
+         const imageUrls = document.getElementById('postImageUrls').value;
+         const imagesArray = imageUrls.split(',').map(url => url.trim()).filter(url => url !== "");
+         const currentUser = getCurrentUser();
+         createPost(content, imagesArray, currentUser.id);
+      });
+      document.getElementById('refreshPosts').addEventListener('click', function() {
+          loadPosts();
+      });
+      // 初始加载帖子列表
+      loadPosts();
+    }
+  </script>
+</body>
+</html>

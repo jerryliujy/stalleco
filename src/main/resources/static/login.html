@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>登录 - Stalleco</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header><h1>登录</h1></header>
+  <main>
+    <section>
+      <form id="loginForm">
+        <label>
+          用户名:
+          <input type="text" id="loginUsername" required>
+        </label>
+        <label>
+          密码:
+          <input type="password" id="loginPassword" required>
+        </label>
+        <button type="submit">登录</button>
+      </form>
+      <p>没有账户？ <a href="register.html">点击注册</a></p>
+      <div id="loginMessage"></div>
+    </section>
+  </main>
+  <script src="js/app.js"></script>
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      let username = document.getElementById('loginUsername').value;
+      let password = document.getElementById('loginPassword').value;
+      loginUser(username, password);
+    });
+  </script>
+</body>
+</html>

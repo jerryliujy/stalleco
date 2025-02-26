@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>主页 - Stalleco</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- 引入高德地图 API -->
+  <script type="text/javascript" src="https://webapi.amap.com/maps?v=2.0&key=4999a21c8876337927e64cb0809ba627"></script>
+</head>
+<body>
+  <header>
+    <h1>Stalleco 主页</h1>
+  </header>
+  <nav>
+    <a href="profile.html">个人信息</a>
+    <a href="stall.html">摆摊模式</a>
+    <a href="community.html">社区模式</a>
+    <a href="#" id="logoutLink">退出登录</a>
+  </nav>
+  <main>
+    <section>
+      <h2>欢迎, <span id="welcomeUser"></span></h2>
+      <p>请选择进入的模式：</p>
+      <button onclick="location.href='stall.html'">摆摊模式</button>
+      <button onclick="location.href='community.html'">社区模式</button>
+    </section>
+    <section>
+      <h2>附近的摊贩</h2>
+      <div id="map" style="height: 400px;"></div>
+    </section>
+  </main>
+  <script src="js/app.js"></script>
+  <script src="js/map.js"></script>
+</body>
+</html>

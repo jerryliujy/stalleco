@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>摆摊模式 - Stalleco</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="startPage">
+    <header>
+      <h1>摆摊模式</h1>
+    </header>
+    <nav>
+      <a href="home.html">主页</a>
+      <a href="profile.html">个人信息</a>
+    </nav>
+    <main>
+      <section>
+        <button id="startStallBtn">开始摆摊</button>
+      </section>
+    </main>
+  </div>
+
+  <div id="timerPage" style="display: none;">
+    <main class="timer-container">
+      <div class="timer-display">
+        <h1 id="timerDisplay">00:00:00</h1>
+      </div>
+      <div class="timer-controls">
+        <button id="endStallBtn">结束摆摊</button>
+      </div>
+    </main>
+  </div>
+
+  <div id="endStallPage" style="display: none;">
+    <main class="end-stall-container">
+      <h2>结束摆摊</h2>
+      <p>请上传摊位卫生状况照片：</p>
+      <input type="file" id="cleanlinessPhoto" accept="image/*" capture="environment">
+      <div id="photoPreview"></div>
+      <button id="submitEndStall" disabled>提交并结束</button>
+    </main>
+  </div>
+</body>
+<script src="js/app.js"></script>
+<script src="js/stall.js"></script>
+</html>

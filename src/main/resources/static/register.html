@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>注册 - Stalleco</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header><h1>注册</h1></header>
+  <main>
+    <section>
+      <form id="registerForm">
+        <label>
+          用户名:
+          <input type="text" id="registerUsername" required>
+        </label>
+        <label>
+          密码:
+          <input type="password" id="registerPassword" required>
+        </label>
+        <button type="submit">注册</button>
+      </form>
+      <p>已有账户？ <a href="login.html">点击登录</a></p>
+      <div id="registerMessage"></div>
+    </section>
+  </main>
+  <script src="js/app.js"></script>
+  <script>
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      let username = document.getElementById('registerUsername').value;
+      let password = document.getElementById('registerPassword').value;
+      registerUser(username, password);
+    });
+  </script>
+</body>
+</html>

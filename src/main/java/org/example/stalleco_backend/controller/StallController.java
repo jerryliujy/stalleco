@@ -1,0 +1,83 @@
+package org.example.stalleco_backend.controller;
+
+import org.example.stalleco_backend.model.StallSession;
+import org.example.stalleco_backend.service.CleaniessEvaluationService;
+import org.example.stalleco_backend.service.StallService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.Map;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/stall")
+public class StallController {
+    @Autowired
+    private StallService stallService;
+    @Autowired
+    private CleaniessEvaluationService cleaniessEvaluationService;
+
+    private int cleaniessScore = 0;
+
+    @PostMapping("/start")
+    public ResponseEntity<StallSession> startStall(@RequestBody Map<String, Object> payload) {
+        Long vendorId = Long.valueOf(payload.get("vendorId").toString());
+        Double latitude = Double.valueOf(payload.get("latitude").toString());
+        Double longitude = Double.valueOf(payload.get("longitude").toString());
+        
+        try {
+            StallSession session = stallService.startStall(vendorId, latitude, longitude);
+            System.out.println(session.getId());
+            return ResponseEntity.ok(session);
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/evaluate")
+    public ResponseEntity<Integer> evaluateImage(@RequestParam("image") MultipartFile image) {
+        try {
+            // 保存上传的图片到临时文件
+            Path tempFile = Files.createTempFile("upload_", "_" + UUID.randomUUID());
+            Files.copy(image.getInputStream(), tempFile, StandardCopyOption.REPLACE_EXISTING);
+
+            // 评估图片
+            cleaniessScore = cleaniessEvaluationService.evaluateImage(tempFile.toString());
+
+            // 删除临时文件
+            Files.deleteIfExists(tempFile);
+
+            return ResponseEntity.ok(cleaniessScore);
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/evaluate-local")
+    public ResponseEntity<Integer> evaluateLocalImage(@RequestParam("path") String imagePath) {
+        try {
+            cleaniessScore = cleaniessEvaluationService.evaluateImage(imagePath);
+            return ResponseEntity.ok(cleaniessScore);
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/end")
+    public ResponseEntity<StallSession> endStall(
+            @RequestParam("sessionId") Long sessionId,
+            @RequestParam("photo") MultipartFile photo) {
+        try {
+            StallSession session = stallService.endStall(sessionId, photo, cleaniessScore);
+            return ResponseEntity.ok(session);
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+}
