@@ -3,6 +3,7 @@ package org.example.stalleco_backend.controller;
 import org.example.stalleco_backend.model.StallSession;
 import org.example.stalleco_backend.service.CleaniessEvaluationService;
 import org.example.stalleco_backend.service.StallService;
+import org.example.stalleco_backend.service.VendorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +13,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -20,20 +20,28 @@ import java.util.UUID;
 public class StallController {
     @Autowired
     private StallService stallService;
+    
     @Autowired
     private CleaniessEvaluationService cleaniessEvaluationService;
+    
+    @Autowired
+    private VendorService vendorService;
 
     private int cleaniessScore = 0;
 
     @PostMapping("/start")
-    public ResponseEntity<StallSession> startStall(@RequestBody Map<String, Object> payload) {
-        Long vendorId = Long.valueOf(payload.get("vendorId").toString());
-        Double latitude = Double.valueOf(payload.get("latitude").toString());
-        Double longitude = Double.valueOf(payload.get("longitude").toString());
+    public ResponseEntity<StallSession> startStall(
+            @RequestParam("vendorId") Long vendorId,
+            @RequestParam("latitude") Double latitude,
+            @RequestParam("longitude") Double longitude) {
         
         try {
+            // 首先验证vendor是否存在
+            if (vendorService.getVendorById(vendorId) == null) {
+                return ResponseEntity.badRequest().build();
+            }
+            
             StallSession session = stallService.startStall(vendorId, latitude, longitude);
-            System.out.println(session.getId());
             return ResponseEntity.ok(session);
         } catch (IllegalStateException | IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();

@@ -1,7 +1,7 @@
 package org.example.stalleco_backend.controller;
 
-import org.example.stalleco_backend.dto.CommentRequest;
-import org.example.stalleco_backend.dto.PostRequest;
+import org.example.stalleco_backend.DTO.CommentRequest;
+import org.example.stalleco_backend.DTO.PostRequest;
 import org.example.stalleco_backend.model.post.Comment;
 import org.example.stalleco_backend.model.post.Post;
 import org.example.stalleco_backend.model.Vendor;

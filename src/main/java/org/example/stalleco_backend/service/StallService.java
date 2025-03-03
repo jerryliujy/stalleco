@@ -95,10 +95,6 @@ public class StallService {
         }
     }
 
-    private double assessCleanliness(String photoUrl) {
-        // TODO: 调用大模型评估照片卫生状况
-        return Math.random() * 5 + 5;
-    }
 
     private String getFileExtension(String filename) {
         return Optional.ofNullable(filename)

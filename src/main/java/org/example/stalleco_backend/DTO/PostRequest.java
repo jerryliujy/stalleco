@@ -1,4 +1,4 @@
-package org.example.stalleco_backend.dto;
+package org.example.stalleco_backend.DTO;
 
 import lombok.Data;
 

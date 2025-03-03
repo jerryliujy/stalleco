@@ -2,11 +2,15 @@ package org.example.stalleco_backend.model.post;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.example.stalleco_backend.model.Vendor;
 
 import java.time.LocalDateTime;
 
 @Data
+@Getter
+@Setter
 @Entity
 public class Comment {
 
