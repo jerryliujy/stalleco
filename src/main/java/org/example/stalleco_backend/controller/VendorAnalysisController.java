@@ -1,5 +1,6 @@
 package org.example.stalleco_backend.controller;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.example.stalleco_backend.model.Vendor;
 import org.example.stalleco_backend.service.AIAnalysisService;
 import org.example.stalleco_backend.service.LocationAnalysisService;
@@ -31,62 +32,58 @@ public class VendorAnalysisController {
     }
     
     /**
-     * 根据已有摊主信息分析位置并获取AI评估
+     * 分析位置并获取AI评估
+     * 支持通过摊主ID或坐标进行分析
      */
-    @PostMapping("/{vendorId}")
-    public ResponseEntity<JsonNode> analyzeVendorLocation(
-            @PathVariable Long vendorId,
-            @RequestParam(required = false) List<MultipartFile> photos) {
-        
-        try {
-            // 获取摊主信息
-            Vendor vendor = vendorService.getVendorById(vendorId);
-            if (vendor == null) {
-                return ResponseEntity.notFound().build();
-            }
-            
-            // 分析位置
-            JsonNode locationData = locationAnalysisService.analyzeLocation(vendor, photos);
-            
-            // 调用AI进行评估
-            JsonNode aiRecommendation = aiAnalysisService.getVendingRecommendation(locationData);
-            
-            return ResponseEntity.ok(aiRecommendation);
-            
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-    
-    /**
-     * 根据坐标分析位置并获取AI评估
-     */
-    @PostMapping("/coordinates")
-    public ResponseEntity<JsonNode> analyzeLocationByCoordinates(
-            @RequestParam double longitude,
-            @RequestParam double latitude,
+    @PostMapping
+    public ResponseEntity<String> analyzeVendorLocation(
+            @RequestParam(required = false) Long vendorId,
+            @RequestParam(required = false) Double longitude,
+            @RequestParam(required = false) Double latitude,
             @RequestParam(required = false) String productType,
             @RequestParam(required = false) String vendorName,
             @RequestParam(required = false) List<MultipartFile> photos) {
-        
+
         try {
-            // 创建临时Vendor对象
-            Vendor tempVendor = new Vendor();
-            tempVendor.setLongitude(longitude);
-            tempVendor.setLatitude(latitude);
-            tempVendor.setStallName(productType);
-            tempVendor.setUsername(vendorName);
-            
+            Vendor vendor;
+
+            // 根据提供的参数决定使用哪种方式获取摊主信息
+            if (vendorId != null) {
+                // 通过ID获取现有摊主
+                vendor = vendorService.getVendorById(vendorId);
+                if (vendor == null) {
+                    return ResponseEntity.notFound().build();
+                }
+            } else if (longitude != null && latitude != null) {
+                // 创建临时Vendor对象
+                vendor = new Vendor();
+                vendor.setLongitude(longitude);
+                vendor.setLatitude(latitude);
+                vendor.setStallName(productType);
+                vendor.setUsername(vendorName);
+            } else {
+                return ResponseEntity.badRequest().body("Missing required parameters");
+            }
+
             // 分析位置
-            JsonNode locationData = locationAnalysisService.analyzeLocation(tempVendor, photos);
-            
-            // 调用AI进行评估
-            JsonNode aiRecommendation = aiAnalysisService.getVendingRecommendation(locationData);
-            
+            JsonNode locationData = locationAnalysisService.analyzeLocation(vendor, photos);
+            List<String> photoUrls = locationData.findValuesAsText("photos");
+            ObjectNode objectNode = (ObjectNode) locationData;
+            // 删除特定的key
+            objectNode.remove("keyToRemove");
+
+            // 获取摊主详情(假设vendorService.getVendorDetails返回JsonNode
+            JsonNode vendorData = vendorService.getVendorDetails(vendor.getId());
+            String combinedData = objectNode + vendorData.toString();
+
+            // 调用AI进行评估并返回JsonNode而非String
+            String aiRecommendation = aiAnalysisService.getVendingRecommendation(combinedData, photoUrls);
+
             return ResponseEntity.ok(aiRecommendation);
-            
+
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            // 创建错误响应
+            return ResponseEntity.badRequest().body("Bad request");
         }
     }
 }

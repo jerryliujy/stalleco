@@ -1,5 +1,6 @@
 package org.example.stalleco_backend.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.example.stalleco_backend.model.Vendor;
 import org.example.stalleco_backend.repository.VendorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,5 +73,9 @@ public class VendorService {
     
     public List<Vendor> getActiveVendors() {
         return vendorRepository.findByIsActiveTrue();
+    }
+
+    public JsonNode getVendorDetails(Long id) {
+        return null;
     }
 }
