@@ -19,16 +19,23 @@ public class Vendor {
     @Column(nullable = false)
     private String password;
 
-    // 摊位名称
-    private String stallName;
-
     // 摊位描述
     private String description;
 
+    // 摊贩类型（如食物类、化妆品类等）
+    private String vendorCategory;
+
+    // 摊贩经营方式（流动摊贩/固定摊贩）
+    private String vendorType; // "MOBILE" 或 "FIXED"
+
+    // 固定摊贩的位置信息（如静安嘉里、大学路等）
+    private String fixedLocation;
+
     // 地理位置：经度与纬度（可扩展为其它格式）
+    // 注意：这些信息不会显示给其他用户
     private Double longitude;
     private Double latitude;
     private boolean isActive;
 
-    private double score = 0.0;
+    private double cleaniessScore = 0.0;
 }

@@ -1,7 +1,7 @@
 package org.example.stalleco_backend.controller;
 
 import org.example.stalleco_backend.model.StallSession;
-import org.example.stalleco_backend.service.CleaniessEvaluationService;
+import org.example.stalleco_backend.service.AIAnalysisService;
 import org.example.stalleco_backend.service.StallService;
 import org.example.stalleco_backend.service.VendorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Collections;
 import java.util.UUID;
 
 @RestController
@@ -22,7 +23,7 @@ public class StallController {
     private StallService stallService;
     
     @Autowired
-    private CleaniessEvaluationService cleaniessEvaluationService;
+    private AIAnalysisService aiAnalysisService;
     
     @Autowired
     private VendorService vendorService;
@@ -56,7 +57,7 @@ public class StallController {
             Files.copy(image.getInputStream(), tempFile, StandardCopyOption.REPLACE_EXISTING);
 
             // 评估图片
-            cleaniessScore = cleaniessEvaluationService.evaluateImage(tempFile.toString());
+            cleaniessScore = aiAnalysisService.getCleaniessEvaluation(Collections.singletonList(tempFile.toString()));
 
             // 删除临时文件
             Files.deleteIfExists(tempFile);
@@ -69,12 +70,8 @@ public class StallController {
 
     @PostMapping("/evaluate-local")
     public ResponseEntity<Integer> evaluateLocalImage(@RequestParam("path") String imagePath) {
-        try {
-            cleaniessScore = cleaniessEvaluationService.evaluateImage(imagePath);
-            return ResponseEntity.ok(cleaniessScore);
-        } catch (IOException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        cleaniessScore = aiAnalysisService.getCleaniessEvaluation(Collections.singletonList(imagePath));
+        return ResponseEntity.ok(cleaniessScore);
     }
 
     @PostMapping("/end")

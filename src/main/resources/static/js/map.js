@@ -1,5 +1,9 @@
 let map = null;
 let markers = [];
+let currentLocation = {
+    latitude: null,
+    longitude: null
+};
 
 window.onload = function() {
     checkLogin();
@@ -25,6 +29,21 @@ function initMap() {
             const lat = position.coords.latitude;
             const lon = position.coords.longitude;
             map.setCenter([lon, lat]);
+        });
+    }
+}
+
+function updateLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+
+            // 只有当位置发生变化时才更新
+            if (lat !== currentLocation.latitude || lon !== currentLocation.longitude) {
+                currentLocation.latitude = lat;
+                currentLocation.longitude = lon;
+            }
         });
     }
 }
@@ -84,3 +103,4 @@ function calculateDuration(startTime) {
 
 // 定期刷新摊贩位置
 setInterval(loadActiveVendors, 30000); // 每30秒刷新一次
+setInterval(updateLocation, 60000);

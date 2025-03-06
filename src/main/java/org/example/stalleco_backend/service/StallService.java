@@ -70,7 +70,7 @@ public class StallService {
             String photoUrl = savePhoto(photo);
             session.setPhotoUrl(photoUrl);
             session.setCleanlinessScore(cleanlinessScore);
-            session.getVendor().setScore((session.getVendor().getScore() + cleanlinessScore) / 2);
+            session.getVendor().setCleaniessScore((session.getVendor().getCleaniessScore() + cleanlinessScore) / 2);
         }
 
         // 更新会话状态

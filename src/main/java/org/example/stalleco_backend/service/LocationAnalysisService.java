@@ -32,15 +32,9 @@ public class LocationAnalysisService {
     
     /**
      * 分析位置是否适合摆摊
-     * @param vendor 摊主信息，包含经纬度
-     * @param photos 用户上传的实地照片（可选）
      * @return 位置分析的JSON数据
      */
-    public JsonNode analyzeLocation(Vendor vendor, List<MultipartFile> photos) throws IOException {
-        // 1. 获取经纬度
-        double longitude = vendor.getLongitude();
-        double latitude = vendor.getLatitude();
-        
+    public JsonNode analyzeLocation(Double longitude, Double latitude) throws IOException {
         // 2. 调用高德逆地理编码API获取位置信息
         Map<String, Object> locationInfo = getLocationInfo(longitude, latitude);
         
@@ -50,24 +44,14 @@ public class LocationAnalysisService {
         // 4. 获取人流量估计（这里是模拟数据，实际可能需要调用其他API）
         Map<String, Object> trafficInfo = getTrafficInfo(longitude, latitude);
         
-        // 5. 处理照片（如果有）
-        List<String> photoUrls = new ArrayList<>();
-        if (photos != null && !photos.isEmpty()) {
-            photoUrls = processPhotos(photos);
-        }
-        
         // 6. 整合所有信息为JSON
         ObjectNode resultJson = objectMapper.createObjectNode();
-        resultJson.put("vendorId", vendor.getId());
-        resultJson.put("vendorName", vendor.getUsername());
-        resultJson.put("productType", vendor.getStallName());
         resultJson.put("longitude", longitude);
         resultJson.put("latitude", latitude);
         resultJson.set("locationInfo", objectMapper.valueToTree(locationInfo));
         resultJson.set("poiInfo", objectMapper.valueToTree(poiInfo));
         resultJson.set("trafficInfo", objectMapper.valueToTree(trafficInfo));
-        resultJson.set("photos", objectMapper.valueToTree(photoUrls));
-        
+
         return resultJson;
     }
     
@@ -185,23 +169,5 @@ public class LocationAnalysisService {
         }
         
         return trafficInfo;
-    }
-    
-    /**
-     * 处理照片并返回URL列表（示例方法）
-     */
-    private List<String> processPhotos(List<MultipartFile> photos) throws IOException {
-        List<String> photoUrls = new ArrayList<>();
-        
-        // 这里应该实现照片上传到存储服务的逻辑
-        // 以下只是示例代码
-        for (int i = 0; i < photos.size(); i++) {
-            MultipartFile photo = photos.get(i);
-            // 实际应用中，这里应该调用文件存储服务API
-            String photoUrl = "https://example.com/uploads/" + System.currentTimeMillis() + "_" + i + ".jpg";
-            photoUrls.add(photoUrl);
-        }
-        
-        return photoUrls;
     }
 }
