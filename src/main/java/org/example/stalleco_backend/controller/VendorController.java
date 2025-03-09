@@ -11,6 +11,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+
+/**
+ * 摊位信息
+ * 包括：注册、登录、分析用户数据、修改信息
+ */
 @RestController
 @RequestMapping("/vendors")
 public class VendorController {
@@ -69,6 +74,9 @@ public class VendorController {
         return ResponseEntity.ok(activeVendors);
     }
 
+    /**
+     * 基于用户历史摆摊信息，得到摆摊策略
+     */
     @GetMapping("/policy")
     public ResponseEntity<String> getRecommendedPolicy(@PathVariable Long id) {
         Vendor vendor = vendorService.getVendorById(id);

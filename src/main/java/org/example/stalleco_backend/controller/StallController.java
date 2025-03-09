@@ -16,6 +16,10 @@ import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 import java.util.UUID;
 
+/**
+ * 负责用户摆摊
+ * 用户点击开始摆摊，然后开始计时，结束摆摊时需要用户上传一张摊位照片，程序自动分析卫生程度
+ */
 @RestController
 @RequestMapping("/stall")
 public class StallController {

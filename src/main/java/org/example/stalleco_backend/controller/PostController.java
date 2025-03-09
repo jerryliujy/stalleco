@@ -18,6 +18,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+
+/**
+ * 用户发帖
+ * 包括：发送帖子、添加评论、搜索帖子
+ */
 @RestController
 @RequestMapping("/posts")
 public class PostController {

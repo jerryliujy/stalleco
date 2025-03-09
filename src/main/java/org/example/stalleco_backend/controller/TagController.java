@@ -9,6 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
+/**
+ * 帖子的标签
+ */
 @RestController
 @RequestMapping("/tags")
 public class TagController {

@@ -19,6 +19,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * 分析用户所处位置是否便于摆摊
+ * 获取用户经纬度，得到用户周边信息，给出是否合适摆摊的评价
+ */
+
 @RestController
 @RequestMapping("/api/vendor-analysis")
 public class VendorAnalysisController {
@@ -37,6 +42,9 @@ public class VendorAnalysisController {
         this.vendorService = vendorService;
     }
 
+    /**
+     * 用户拍照上传图片
+     */
     @PostMapping("/analyse")
     public ResponseEntity<String> analyse(
             @RequestParam("vendorId") Long vendorId,
@@ -62,6 +70,9 @@ public class VendorAnalysisController {
         }
     }
 
+    /**
+     * 上传本地图片
+     */
     @PostMapping("/analyse-local")
     public ResponseEntity<String> analyseLocal(
             @RequestParam("vendorId") Long vendorId,
