@@ -8,20 +8,13 @@ import com.alibaba.dashscope.common.Role;
 import com.alibaba.dashscope.exception.ApiException;
 import com.alibaba.dashscope.exception.NoApiKeyException;
 import com.alibaba.dashscope.exception.UploadFileException;
-import com.alibaba.dashscope.utils.JsonUtils;
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.slf4j.Slf4j;
-import org.example.stalleco_backend.model.chat.ChatCompletionRequest;
-import org.example.stalleco_backend.model.chat.ChatCompletionResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -54,12 +47,22 @@ public class AIAnalysisService {
                 .content(contents)
                 .build();
 
-        // 构造对话调用参数，此处示例使用 qwen-vl-plus 模型，可根据需求修改
-        MultiModalConversationParam param = MultiModalConversationParam.builder()
-                .apiKey(apiKey)
-                .model("qwen-vl-plus")
-                .message(message)
-                .build();
+        MultiModalConversationParam param;
+
+        if (photoUrls.isEmpty()) {
+            param = MultiModalConversationParam.builder()
+                    .apiKey(apiKey)
+                    .model("qwen-plus")
+                    .message(message)
+                    .build();
+        } else {
+            // 构造对话调用参数，此处示例使用 qwen-vl-plus 模型，可根据需求修改
+            param = MultiModalConversationParam.builder()
+                    .apiKey(apiKey)
+                    .model("qwen-vl-plus")
+                    .message(message)
+                    .build();
+        }
 
         // 调用千问 API
         MultiModalConversationResult result = conv.call(param);
@@ -94,6 +97,21 @@ public class AIAnalysisService {
             String userPrompt = "请评分: ";
             String response = callQianwen(systemPrompt, userPrompt, photoUrls);
             return extractCleaniessScore(response);
+        } catch (Exception e) {
+            throw new RuntimeException("AI调用失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 根据摊贩历史数据和信息获取摆摊策略
+     */
+    public String getPolicy(String info) {
+        try {
+            String systemPrompt = "你是一个专业的摊位策略制定师，你需要为这个摊位制定一个摆摊策略。"
+                    + "你需要关注摊位的历史摆摊数据，摊位的特点等信息。"
+                    + "你需要制定一个详细的摆摊策略，包括摊位的布置，摊位的商品，摊位的营销手段，摊位适合的摆摊位置等。";
+            String userPrompt = "请制定摆摊策略: " + info;
+            return callQianwen(systemPrompt, userPrompt, new ArrayList<>());
         } catch (Exception e) {
             throw new RuntimeException("AI调用失败: " + e.getMessage());
         }

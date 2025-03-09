@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface VendorRepository extends JpaRepository<Vendor, Long> {
     Optional<Vendor> findByUsername(String username);
-    List<Vendor> findByStallNameContaining(String stallName);
+    List<Vendor> findByUsernameContaining(String stallName);
     List<Vendor> findByIsActiveTrue(); 
 }

@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>摊贩管理系统</title>
+  <style>
+    /* 全局样式 */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+    }
+
+    body {
+      background-color: #f5f5f5;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .header {
+      background-color: #2c3e50;
+      color: white;
+      padding: 15px 0;
+      margin-bottom: 20px;
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .nav {
+      display: flex;
+      gap: 20px;
+    }
+
+    .nav a {
+      color: white;
+      text-decoration: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+
+    .nav a:hover {
+      background-color: #34495e;
+    }
+
+    .card {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      color: #2c3e50;
+      margin-bottom: 15px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    button:disabled {
+      background-color: #95a5a6;
+      cursor: not-allowed;
+    }
+
+    .message {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 4px;
+    }
+
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+
+    /* 登录和注册页面样式 */
+    .auth-container {
+      max-width: 500px;
+      margin: 50px auto;
+    }
+
+    .auth-links {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .auth-links a {
+      color: #3498db;
+      text-decoration: none;
+    }
+
+    /* 地图页面样式 */
+    #map {
+      height: 500px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    /* 摆摊页面样式 */
+    .stall-container {
+      text-align: center;
+    }
+
+    .timer {
+      font-size: 48px;
+      margin: 20px 0;
+      font-weight: bold;
+    }
+
+    /* 个人资料页面样式 */
+    .profile-form {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* 社区页面样式 */
+    .post {
+      border-bottom: 1px solid #eee;
+      padding: 15px 0;
+    }
+
+    .post:last-child {
+      border-bottom: none;
+    }
+
+    .comment-section {
+      margin-top: 10px;
+      padding-left: 20px;
+      border-left: 3px solid #eee;
+    }
+
+    .comment {
+      padding: 5px 0;
+    }
+
+    .post-form {
+      margin-bottom: 20px;
+    }
+
+    .tab-container {
+      display: flex;
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      padding: 10px 20px;
+      background-color: #ddd;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      background-color: #3498db;
+      color: white;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <!-- 登录页面 -->
+  <div id="loginPage" class="container auth-container">
+    <div class="card">
+      <h2>摊贩管理系统登录</h2>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="loginUsername">用户名</label>
+          <input type="text" id="loginUsername" required>
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">密码</label>
+          <input type="password" id="loginPassword" required>
+        </div>
+        <button type="submit">登录</button>
+        <div id="loginMessage" class="message"></div>
+      </form>
+      <div class="auth-links">
+        <p>还没有账号？<a href="register.html">注册新账号</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 注册页面 -->
+  <div id="registerPage" class="container auth-container" style="display: none;">
+    <div class="card">
+      <h2>注册新账号</h2>
+      <form id="registerForm">
+        <div class="form-group">
+          <label for="registerUsername">用户名</label>
+          <input type="text" id="registerUsername" required>
+        </div>
+        <div class="form-group">
+          <label for="registerPassword">密码</label>
+          <input type="password" id="registerPassword" required>
+        </div>
+        <button type="submit">注册</button>
+        <div id="registerMessage" class="message"></div>
+      </form>
+      <div class="auth-links">
+        <p>已有账号？<a href="login.html">返回登录</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 主页 -->
+  <div id="homePage" class="container" style="display: none;">
+    <div class="header">
+      <div class="header-content">
+        <div class="logo">摊贩管理系统</div>
+        <div class="nav">
+          <a href="#" id="mapLink">地图浏览</a>
+          <a href="#" id="stallLink">摆摊管理</a>
+          <a href="#" id="communityLink">社区交流</a>
+          <a href="#" id="profileLink">个人资料</a>
+          <a href="#" id="logoutLink">登出</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="welcome-banner card">
+      <h2>欢迎回来，<span id="welcomeUser"></span>！</h2>
+      <p>今天是个出摊的好日子！</p>
+    </div>
+
+    <!-- 地图页面 -->
+    <div id="mapTab" class="tab-content active">
+      <h2>附近的摊贩</h2>
+      <div id="map"></div>
+    </div>
+
+    <!-- 摆摊管理页面 -->
+    <div id="stallTab" class="tab-content">
+      <div class="card stall-container">
+        <!-- 开始摆摊页面 -->
+        <div id="startPage">
+          <h2>开始摆摊</h2>
+          <p>点击下方按钮开始记录你的摆摊时间和位置</p>
+          <button id="startStallBtn">开始摆摊</button>
+        </div>
+
+        <!-- 计时页面 -->
+        <div id="timerPage" style="display: none;">
+          <h2>摆摊中</h2>
+          <div class="timer" id="timerDisplay">00:00:00</div>
+          <p>已经在当前位置摆摊的时间</p>
+          <button id="endStallBtn">结束摆摊</button>
+        </div>
+
+        <!-- 结束摆摊页面 -->
+        <div id="endStallPage" style="display: none;">
+          <h2>结束摆摊</h2>
+          <p>请上传摊位清洁照片，确保离开时环境整洁</p>
+          <div class="form-group">
+            <label for="cleanlinessPhoto">上传照片</label>
+            <input type="file" id="cleanlinessPhoto" accept="image/*">
+            <div id="photoPreview"></div>
+          </div>
+          <button id="submitEndStall" disabled>提交并结束</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 社区交流页面 -->
+    <div id="communityTab" class="tab-content">
+      <div class="card">
+        <h2>社区交流</h2>
+        <div class="post-form">
+          <form id="postForm">
+            <div class="form-group">
+              <label for="postContent">发表新帖子</label>
+              <textarea id="postContent" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+              <label for="postImageUrls">图片链接（多个链接用逗号分隔）</label>
+              <input type="text" id="postImageUrls">
+            </div>
+            <button type="submit">发布</button>
+            <div id="postMessage" class="message"></div>
+          </form>
+        </div>
+        <h3>最新帖子</h3>
+        <div id="postsList">
+          <!-- 帖子将动态加载 -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 个人资料页面 -->
+    <div id="profileTab" class="tab-content">
+      <div class="card">
+        <h2>个人资料</h2>
+        <form id="profileForm" class="profile-form">
+          <div class="form-group">
+            <label for="stallName">摊位名称</label>
+            <input type="text" id="stallName">
+          </div>
+          <div class="form-group">
+            <label for="description">摊位描述</label>
+            <textarea id="description" rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="contactPhone">联系电话</label>
+            <input type="text" id="contactPhone">
+          </div>
+          <button type="submit">保存更改</button>
+          <div id="profileMessage" class="message"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- 引入高德地图 API -->
+  <script src="https://webapi.amap.com/maps?v=2.0&key=YOUR_AMAP_KEY"></script>
+  
+  <!-- 主应用脚本 -->
+  <script>
+    // 后端 API 地址（根据实际部署修改）
+    const baseUrl = 'http://localhost:8080';
+
+    // 从 localStorage 中获取当前登录的用户
+    function getCurrentUser() {
+      const user = localStorage.getItem('currentUser');
+      return user ? JSON.parse(user) : null;
+    }
+
+    // 检查登录状态（未登录则跳转到登录页面）
+    function checkLogin() {
+      const user = getCurrentUser();
+      if (!user) {
+        showPage('loginPage');
+      } else {
+        showPage('homePage');
+        document.getElementById('welcomeUser').innerText = user.username;
+        loadTab('mapTab');
+        initMap();
+        loadActiveVendors();
+        loadProfileData();
+      }
+    }
+
+    // 登出处理
+    function logoutUser() {
+      localStorage.removeItem('currentUser');
+      showPage('loginPage');
+    }
+
+    // 登录接口调用
+    function loginUser(username, password) {
+      fetch(baseUrl + '/vendors/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, password })
+      })
+      .then(response => {
+        if (response.ok) return response.json();
+        else throw new Error('登录失败');
+      })
+      .then(data => {
+        // 登录成功，将用户信息保存在 localStorage 中
+        localStorage.setItem('currentUser', JSON.stringify(data));
+        checkLogin();
+      })
+      .catch(error => {
+        document.getElementById('loginMessage').innerText = error.message;
+        document.getElementById('loginMessage').className = 'message error';
+      });
+    }
+
+    // 注册接口调用（仅传递用户名和密码）
+    function registerUser(username, password) {
+      fetch(baseUrl + '/vendors/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, password })
+      })
+      .then(response => {
+        if (response.ok) return response.json();
+        else throw new Error('注册失败：用户名可能已存在');
+      })
+      .then(data => {
+        alert('注册成功，请登录');
+        showPage('loginPage');
+      })
+      .catch(error => {
+        document.getElementById('registerMessage').innerText = error.message;
+        document.getElementById('registerMessage').className = 'message error';
+      });
+    }
+
+    // 更新个人资料
+    function updateProfile(vendorId, updatedVendor) {
+      fetch(baseUrl + '/vendors/' + vendorId, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updatedVendor)
+      })
+      .then(response => {
+        if (response.ok) return response.json();
+        else throw new Error('更新失败');
+      })
+      .then(data => {
+        // 更新成功后，更新本地存储中的用户信息
+        let currentUser = getCurrentUser();
+        currentUser = { ...currentUser, ...data };
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        document.getElementById('profileMessage').innerText = "更新成功";
+        document.getElementById('profileMessage').className = 'message success';
+      })
+      .catch(error => {
+        document.getElementById('profileMessage').innerText = error.message;
+        document.getElementById('profileMessage').className = 'message error';
+      });
+    }
+
+    // 加载用户资料数据
+    function loadProfileData() {
+      const user = getCurrentUser();
+      if (user) {
+        document.getElementById('stallName').value = user.stallName || '';
+        document.getElementById('description').value = user.description || '';
+        document.getElementById('contactPhone').value = user.contactPhone || '';
+      }
+    }
+
+    // 社区模式：创建帖子
+    function createPost(content, imageUrls, vendorId) {
+      const postData = {
+        content: content,
+        imageUrls: imageUrls ? imageUrls.split(',').map(url => url.trim()) : [],
+        vendor: { id: vendorId }
+      };
+      fetch(baseUrl + '/posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(postData)
+      })
+      .then(response => {
+        if(response.ok) return response.json();
+        else throw new Error('发帖失败');
+      })
+      .then(data => {
+        document.getElementById('postMessage').innerText = "帖子已发布";
+        document.getElementById('postMessage').className = 'message success';
+        document.getElementById('postContent').value = "";
+        document.getElementById('postImageUrls').value = "";
+        loadPosts(); // 刷新帖子列表
+      })
+      .catch(error => {
+        document.getElementById('postMessage').innerText = error.message;
+        document.getElementById('postMessage').className = 'message error';
+      });
+    }
+
+    // 加载所有帖子，并显示在页面中
+    function loadPosts() {
+      fetch(baseUrl + '/posts')
+        .then(response => response.json())
+        .then(data => {
+          const postsList = document.getElementById('postsList');
+          postsList.innerHTML = '';
+          data.forEach(post => {
+            const postDiv = document.createElement('div');
+            postDiv.className = 'post';
+            postDiv.innerHTML = `<p><strong>${post.vendor.stallName || post.vendor.username}</strong>:</p>
+                                <p>${post.content}</p>`;
+            
+            // 评论区域
+            const commentSection = document.createElement('div');
+            commentSection.className = 'comment-section';
+            commentSection.innerHTML = `<h4>评论</h4>`;
+            
+            // 显示已有评论
+            if(post.comments && post.comments.length > 0) {
+              post.comments.forEach(comment => {
+                const commentDiv = document.createElement('div');
+                commentDiv.className = 'comment';
+                commentDiv.innerHTML = `<p><strong>${comment.vendor.stallName || comment.vendor.username}</strong>: ${comment.content}</p>`;
+                commentSection.appendChild(commentDiv);
+              });
+            }
+            
+            // 添加评论表单
+            const commentForm = document.createElement('form');
+            commentForm.innerHTML = `<input type="text" placeholder="添加评论" required>
+                                    <button type="submit">评论</button>`;
+            commentForm.addEventListener('submit', function(e) {
+              e.preventDefault();
+              const commentContent = this.querySelector('input').value;
+              const currentUser = getCurrentUser();
+              addComment(post.id, commentContent, currentUser.id, commentSection);
+              this.querySelector('input').value = "";
+            });
+            commentSection.appendChild(commentForm);
+            postDiv.appendChild(commentSection);
+            postsList.appendChild(postDiv);
+          });
+        })
+        .catch(error => {
+          document.getElementById('postsList').innerHTML = '<p class="error">加载帖子失败: ' + error.message + '</p>';
+        });
+    }
+
+    // 社区模式：添加评论
+    function addComment(postId, content, vendorId, commentSection) {
+      const commentData = {
+        content: content,
+        vendor: { id: vendorId }
+      };
+      fetch(baseUrl + '/posts/' + postId + '/comments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(commentData)
+      })
+      .then(response => {
+        if(response.ok) return response.json();
+        else throw new Error('评论失败');
+      })
+      .then(data => {
+        const commentDiv = document.createElement('div');
+        commentDiv.className = 'comment';
+        commentDiv.innerHTML = `<p><strong>${data.vendor.stallName || data.vendor.username}</strong>: ${data.content}</p>`;
+        commentSection.insertBefore(commentDiv, commentSection.lastElementChild);
+      })
+      .catch(error => {
+        alert(error.message);
+      });
+    }
+
+    // 地图功能
+    let map = null;
+    let markers = [];
+
+    function initMap() {
+      // 确保地图容器已经显示
+      document.getElementById('mapTab').style.display = 'block';
+      
+      map = new AMap.Map('map', {
+        zoom: 15
+      });
+      
+      // 获取当前位置并设置为地图中心
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          map.setCenter([lon, lat]);
+        });
+      }
+    }
+
+    function loadActiveVendors() {
+      fetch(baseUrl + '/vendors/active')
+        .then(response => response.json())
+        .then(vendors => {
+          clearMarkers();
+          vendors.forEach(vendor => {
+            if (vendor.latitude && vendor.longitude) {
+              addVendorMarker(vendor);
+            }
+          });
+        })
+        .catch(error => {
+          console.error('加载摊贩数据失败:', error);
+        });
+    }
+
+    function addVendorMarker(vendor) {
+      const marker = new AMap.Marker({
+        position: [vendor.longitude, vendor.latitude],
+        title: vendor.stallName || vendor.username
+      });
+      
+      // 添加信息窗体
+      const info = new AMap.InfoWindow({
+        content: `
+          <div>
+            <h4>${vendor.stallName || vendor.username}</h4>
+            <p>${vendor.description || '暂无描述'}</p>
+            <p>摆摊时长：${calculateDuration(vendor.startTime)}</p>
+          </div>
+        `,
+        offset: new AMap.Pixel(0, -30)
+      });
+      
+      marker.on('click', () => {
+        info.open(map, marker.getPosition());
+      });
+      
+      marker.setMap(map);
+      markers.push(marker);
+    }
+
+    function clearMarkers() {
+      markers.forEach(marker => marker.setMap(null));
+      markers = [];
+    }
+
+    function calculateDuration(startTime) {
+      const start = new Date(startTime);
+      const now = new Date();
+      const diff = now - start;
+      const hours = Math.floor(diff / 3600000);
+      const minutes = Math.floor((diff % 3600000) / 60000);
+      return `${hours}小时${minutes}分钟`;
+    }
+
+    // 摆摊功能
+    let timer = null;
+    let currentSession = null;
+    let startTime = null;
+
+    function startTimer() {
+      startTime = new Date();
+      timer = setInterval(updateTimer, 1000);
+    }
+
+    function updateTimer() {
+      const now = new Date();
+      const diff = now - startTime;
+      const hours = Math.floor(diff / 3600000);
+      const minutes = Math.floor((diff % 3600000) / 60000);
+      const seconds = Math.floor((diff % 60000) / 1000);
+      
+      document.getElementById('timerDisplay').textContent = 
+        `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    function startStall() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          
+          const currentUser = getCurrentUser();
+          fetch(baseUrl + '/stall/start', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              vendorId: currentUser.id,
+              latitude: lat,
+              longitude: lon
+            })
+          })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('开始摆摊失败');
+            }
+            return response.json();
+          })
+          .then(data => {
+            currentSession = data;
+            document.getElementById('startPage').style.display = 'none';
+            document.getElementById('timerPage').style.display = 'block';
+            document.getElementById('endStallPage').style.display = 'none';
+            startTimer();
+          })
+          .catch(error => {
+            alert('开始摆摊失败：' + error.message);
+          });
+        }, function(error) {
+          alert('获取位置信息失败：' + error.message);
+        });
+      } else {
+        alert('您的浏览器不支持地理定位');
+      }
+    }
+
+    function showEndStallSection() {
+      document.getElementById('timerPage').style.display = 'none';
+      document.getElementById('endStallPage').style.display = 'block';
+    }
+
+    function handlePhotoUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        document.getElementById('submitEndStall').disabled = false;
+        
+        // 预览照片
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const preview = document.getElementById('photoPreview');
+          preview.innerHTML = `<img src="${e.target.result}" style="max-width: 300px;">`;
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function endStall() {
+      if (currentSession) {
+        clearInterval(timer);
+        
+        // 获取清洁照片
+        const fileInput = document.getElementById('cleanlinessPhoto');
+        const file = fileInput.files[0];
+        
+        // 创建 FormData 对象上传文件
+        const formData = new FormData();
+        formData.append('sessionId', currentSession.id);
+        formData.append('photo', file);
+        
+        fetch(baseUrl + '/stall/end', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('结束摆摊失败');
+          }
+          return response.json();
+        })
+        .then(data => {
+          alert('摆摊已成功结束！');
+          document.getElementById('startPage').style.display = 'block';
+          document.getElementById('timerPage').style.display = 'none';
+          document.getElementById('endStallPage').style.display = 'none';
+          document.getElementById('photoPreview').innerHTML = '';
+          document.getElementById('cleanlinessPhoto').value = '';
+          document.getElementById('submitEndStall').disabled = true;
+          currentSession = null;
+        })
+        .catch(error => {
+          alert('结束摆摊失败：' + error.message);
+        });
+      }
+    }
+
+    // 页面切换
+    function showPage(pageId) {
+      // 隐藏所有页面
+      document.getElementById('loginPage').style.display = 'none';
+      document.getElementById('registerPage').style.display = 'none';
+      document.getElementById('homePage').style.display = 'none';
+      
+      // 显示指定页面
+      document.getElementById(pageId).style.display = 'block';
+    }
+
+    // 标签切换
+    function loadTab(tabId) {
+      // 隐藏所有标签内容
+      const tabContents = document.querySelectorAll('.tab-content');
+      tabContents.forEach(tab => {
+        tab.classList.remove('active');
+        tab.style.display = 'none';
+      });
+      
+      // 显示指定标签内容
+      document.getElementById(tabId).classList.add('active');
+      document.getElementById(tabId).style.display = 'block';
+      
+      // 特殊处理
+      if (tabId === 'mapTab') {
+        if (map === null) {
+          initMap();
+        }
+        loadActiveVendors();
+      } else if (tabId === 'communityTab') {
+        loadPosts();
+      } else if (tabId === 'profileTab') {
+        loadProfileData();
+      }
+    }
+
+    // 事件监听
+    document.addEventListener('DOMContentLoaded', function() {
+      // 检查登录状态
+      checkLogin();
+      
+      // 登录表单提交
+      document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const username = document.getElementById('loginUsername').value;
+        const password = document.getElementById('loginPassword').value;
+        loginUser(username, password);
+      });
+      
+      // 注册表单提交
+      document.getElementById('registerForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const username = document.getElementById('registerUsername').value;
+        const password = document.getElementById('registerPassword').value;
+        registerUser(username, password);
+      });
+      
+      // 个人资料表单提交
+      document.getElementById('profileForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const user = getCurrentUser();
+        const updatedVendor = {
+          stallName: document.getElementById('stallName').value,
+          description: document.getElementById('description').value,
+          contactPhone: document.getElementById('contactPhone').value
+        };
+        updateProfile(user.id, updatedVendor);
+      });
+      
+      // 帖子表单提交
+      document.getElementById('postForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const content = document.getElementById('postContent').value;
+        const imageUrls = document.getElementById('postImageUrls').value;
+        const user = getCurrentUser();
+        createPost(content, imageUrls, user.id);
+      });
+      
+      // 导航链接
+      document.getElementById('mapLink').addEventListener('click', function(e) {
+        e.preventDefault();
+        loadTab('mapTab');
+      });
+      
+      document.getElementById('stallLink').addEventListener('click', function(e) {
+        e.preventDefault();
+        loadTab('stallTab');
+      });
+      
+      document.getElementById('communityLink').addEventListener('click', function(e) {
+        e.preventDefault();
+        loadTab('communityTab');
+      });
+      
+      document.getElementById('profileLink').addEventListener('click', function(e) {
+        e.preventDefault();
+        loadTab('profileTab');
+      });
+
+        // Logout link
+        document.getElementById('logoutLink').addEventListener('click', function(e) {
+          e.preventDefault();
+          logoutUser();
+        });
+
+        // Stall management buttons
+        document.getElementById('startStallBtn').addEventListener('click', function() {
+          startStall();
+        });
+
+        document.getElementById('endStallBtn').addEventListener('click', function() {
+          showEndStallSection();
+        });
+
+        document.getElementById('submitEndStall').addEventListener('click', function() {
+          endStall();
+        });
+
+        // Photo upload handling
+        document.getElementById('cleanlinessPhoto').addEventListener('change', handlePhotoUpload);
+
+        // Login and register page navigation
+        document.querySelector('.auth-links a[href="register.html"]').addEventListener('click', function(e) {
+          e.preventDefault();
+          showPage('registerPage');
+        });
+
+        document.querySelector('.auth-links a[href="login.html"]').addEventListener('click', function(e) {
+          e.preventDefault();
+          showPage('loginPage');
+        });
+      });
+
+// Add function to refresh map data periodically
+      function setupMapAutoRefresh() {
+        // Refresh active vendors every 5 minutes
+        setInterval(loadActiveVendors, 300000);
+      }
+
+// Function to handle session expiry or interruption
+      function checkStallSession() {
+        const user = getCurrentUser();
+        if (user && user.activeSession) {
+          // Restore active session
+          currentSession = user.activeSession;
+          startTime = new Date(currentSession.startTime);
+          document.getElementById('startPage').style.display = 'none';
+          document.getElementById('timerPage').style.display = 'block';
+          startTimer();
+        }
+      }
+
+// Enhance the checkLogin function to also check for active stall sessions
+      function enhancedCheckLogin() {
+        checkLogin();
+        if (getCurrentUser()) {
+          checkStallSession();
+          setupMapAutoRefresh();
+        }
+      }
+
+// Call the enhanced check login instead
+      enhancedCheckLogin();
+
+// Add error handling for map API loading
+      function handleMapError() {
+        const mapElement = document.getElementById('map');
+        if (mapElement) {
+          mapElement.innerHTML = '<div class="error">地图加载失败，请检查网络连接或刷新页面重试</div>';
+        }
+      }
+
+// Modify the startStall function to handle location permission denial
+      function handleLocationPermissionDenial() {
+        alert('需要位置权限才能开始摆摊。请在浏览器设置中允许位置访问，然后重试。');
+      }
+
+// Add validation functions
+      function validateProfileForm() {
+        const phoneInput = document.getElementById('contactPhone');
+        const phonePattern = /^1[3-9]\d{9}$/; // Simple Chinese phone number validation
+
+        if (phoneInput.value && !phonePattern.test(phoneInput.value)) {
+          document.getElementById('profileMessage').innerText = "请输入有效的手机号码";
+          document.getElementById('profileMessage').className = 'message error';
+          return false;
+        }
+
+        return true;
+      }
+
+// Update the profile form submission to include validation
+      document.getElementById('profileForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (!validateProfileForm()) {
+          return;
+        }
+
+        const user = getCurrentUser();
+        const updatedVendor = {
+          stallName: document.getElementById('stallName').value,
+          description: document.getElementById('description').value,
+          contactPhone: document.getElementById('contactPhone').value
+        };
+        updateProfile(user.id, updatedVendor);
+      });
+
+// Add a function to show loading indicators
+      function showLoading(elementId) {
+        const element = document.getElementById(elementId);
+        if (element) {
+          element.innerHTML = '<div class="loading">加载中...</div>';
+        }
+      }
+
+// Hide loading indicator
+      function hideLoading(elementId) {
+        const element = document.getElementById(elementId);
+        if (element) {
+          const loadingDiv = element.querySelector('.loading');
+          if (loadingDiv) {
+            loadingDiv.remove();
+          }
+        }
+      }
+
+// Update loadPosts function to show loading indicator
+      function enhancedLoadPosts() {
+        showLoading('postsList');
+        loadPosts();
+      }
+
+// Modify the community tab event listener to use enhanced loading
+      document.getElementById('communityLink').addEventListener('click', function(e) {
+        e.preventDefault();
+        loadTab('communityTab');
+        enhancedLoadPosts();
+      });
+
+// Add a function to handle network errors
+      function handleNetworkError(operation, error) {
+        console.error(`${operation} failed:`, error);
+        alert(`操作失败: ${error.message || '网络连接问题，请稍后重试'}`);
+      }
+
+// Add a function to format date/time for display
+      function formatDateTime(dateString) {
+        const date = new Date(dateString);
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+      }
+
+// Enhance the post display to include timestamps
+      function enhancePostDisplay(post, postDiv) {
+        const timestampP = document.createElement('p');
+        timestampP.className = 'post-time';
+        timestampP.innerText = `发布于: ${formatDateTime(post.createdAt)}`;
+        timestampP.style.fontSize = '0.8em';
+        timestampP.style.color = '#888';
+        postDiv.appendChild(timestampP);
+      }
+
+// Auto-refresh functionality for active posts
+      let autoRefreshInterval = null;
+
+      function toggleAutoRefresh(enable) {
+        if (enable) {
+          if (!autoRefreshInterval) {
+            autoRefreshInterval = setInterval(loadPosts, 60000); // Refresh every minute
+          }
+        } else {
+          if (autoRefreshInterval) {
+            clearInterval(autoRefreshInterval);
+            autoRefreshInterval = null;
+          }
+        }
+      }
+
+// Add event listeners for page visibility changes to manage refresh
+      document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'visible') {
+          // Page is visible, enable auto-refresh for relevant content
+          const activePage = document.querySelector('.tab-content.active');
+          if (activePage && activePage.id === 'communityTab') {
+            toggleAutoRefresh(true);
+          }
+        } else {
+          // Page is hidden, disable auto-refresh to save resources
+          toggleAutoRefresh(false);
+        }
+      });
+
+// Enhance tab switching to manage auto-refresh
+      function enhancedLoadTab(tabId) {
+        // First handle the basic tab switching
+        loadTab(tabId);
+
+        // Then manage auto-refresh based on active tab
+        toggleAutoRefresh(tabId === 'communityTab');
+      }
+
+// Update all tab navigation to use enhanced tab loading
+      document.getElementById('mapLink').addEventListener('click', function(e) {
+        e.preventDefault();
+        enhancedLoadTab('mapTab');
+      });
+
+      document.getElementById('stallLink').addEventListener('click', function(e) {
+        e.preventDefault();
+        enhancedLoadTab('stallTab');
+      });
+
+      document.getElementById('communityLink').addEventListener('click', function(e) {
+        e.preventDefault();
+        enhancedLoadTab('communityTab');
+      });
+
+      document.getElementById('profileLink').addEventListener('click', function(e) {
+        e.preventDefault();
+        enhancedLoadTab('profileTab');
+      });
+  </script>

@@ -1,6 +1,7 @@
 package org.example.stalleco_backend.controller;
 
 import org.example.stalleco_backend.model.Vendor;
+import org.example.stalleco_backend.service.AIAnalysisService;
 import org.example.stalleco_backend.service.VendorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,8 @@ public class VendorController {
 
     @Autowired
     private VendorService vendorService;
+    @Autowired
+    private AIAnalysisService aiAnalysisService;
 
     // 摊贩注册
     @PostMapping("/register")
@@ -64,5 +67,15 @@ public class VendorController {
     public ResponseEntity<List<Vendor>> getActiveVendors() {
         List<Vendor> activeVendors = vendorService.getActiveVendors();
         return ResponseEntity.ok(activeVendors);
+    }
+
+    @GetMapping("/policy")
+    public ResponseEntity<String> getRecommendedPolicy(@PathVariable Long id) {
+        Vendor vendor = vendorService.getVendorById(id);
+        if (vendor == null) {
+            return ResponseEntity.notFound().build();
+        }
+        String policy = aiAnalysisService.getPolicy(vendorService.getVendorDetails(vendor).toString());
+        return ResponseEntity.ok(policy);
     }
 }

@@ -103,4 +103,4 @@ function calculateDuration(startTime) {
 
 // 定期刷新摊贩位置
 setInterval(loadActiveVendors, 30000); // 每30秒刷新一次
-setInterval(updateLocation, 60000);
+// setInterval(updateLocation, 60000);

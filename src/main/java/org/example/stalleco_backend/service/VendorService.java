@@ -96,7 +96,7 @@ public class VendorService {
     
     public List<Vendor> searchVendors(String query) {
         if (query != null && !query.isEmpty()) {
-            return vendorRepository.findByStallNameContaining(query);
+            return vendorRepository.findByUsernameContaining(query);
         } else {
             return vendorRepository.findAll();
         }
